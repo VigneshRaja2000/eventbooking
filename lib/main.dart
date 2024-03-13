@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eventbooking/login.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -13,12 +14,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Syncfusion Calendar Example'),
+          backgroundColor: Colors.black87,
+          title: const Text(
+            'Multi-calendar Management App',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-        body: MyCalendar(),
+        body: const LoginPage(),
       ),
     );
   }
@@ -27,7 +33,12 @@ class MyApp extends StatelessWidget {
 class MyCalendar extends StatelessWidget {
   fetchUserData() async {
     final response = await http
-        .get(Uri.parse('https://event-calendar-3.onrender.com/list_events'));
+        .get(
+        Uri.parse('https://event-calendar-3.onrender.com/list_events'),
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+        });
     if (response.statusCode == 200) {
       // Parse the response body
       var userData = jsonDecode(response.body);
@@ -61,7 +72,7 @@ class MyCalendar extends StatelessWidget {
           // Check if meetings is initialized
           if (meetings.isEmpty) {
             // If not initialized, return a placeholder widget or empty container
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(), // Placeholder widget
             );
           } else {
@@ -90,7 +101,7 @@ class MyCalendar extends StatelessWidget {
                   if (isEventBooked) {
                     // Show a snack bar if the event is already booked
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content:
                             Text('The date is already booked with an event.'),
                       ),
@@ -122,17 +133,17 @@ class MyCalendar extends StatelessWidget {
       builder: (BuildContext context) {
         TextEditingController controller = TextEditingController();
         return AlertDialog(
-          title: Text('New Appointment'),
+          title: const Text('New Appointment'),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(hintText: 'Enter Subject'),
+            decoration: const InputDecoration(hintText: 'Enter Subject'),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
@@ -198,7 +209,7 @@ class MyCalendar extends StatelessWidget {
                 Navigator.of(context).pop();
                 print(meetings);
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           ],
         );
