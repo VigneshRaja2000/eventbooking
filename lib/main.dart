@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black87,
           title: const Text(
             'Multi-calendar Management App',
             style: TextStyle(color: Colors.white),
@@ -32,8 +31,7 @@ class MyApp extends StatelessWidget {
 
 class MyCalendar extends StatelessWidget {
   fetchUserData() async {
-    final response = await http
-        .get(
+    final response = await http.get(
         Uri.parse('https://event-calendar-3.onrender.com/list_events'),
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -65,60 +63,73 @@ class MyCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     fetchUserData(); // Call fetchUserData() to populate the meetings list
 
-    return Container(
-      height: 500,
-      child: Obx(
-        () {
-          // Check if meetings is initialized
-          if (meetings.isEmpty) {
-            // If not initialized, return a placeholder widget or empty container
-            return const Center(
-              child: CircularProgressIndicator(), // Placeholder widget
-            );
-          } else {
-            // If initialized, return SfCalendar with meetings data
-            return SfCalendar(
-              view: CalendarView.month,
-              dataSource: CustomCalendarDataSource(getAppointment(meetings)),
-              onTap: (CalendarTapDetails details) {
-                // Handle tap events here
-                // ...
-                if (details.targetElement == CalendarElement.calendarCell) {
-                  // Check if the tapped element is a calendar cell (date)
-                  isDateBooked(DateTime selectedDate) {
-                    for (var appointment in meetings) {
-                      if (appointment.startTime.year == selectedDate.year &&
-                          appointment.startTime.month == selectedDate.month &&
-                          appointment.startTime.day == selectedDate.day) {
-                        return true; // Date is already booked
-                      }
-                    }
-                    return false; // Date is not booked
-                  }
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("My Calendar"),
+          automaticallyImplyLeading: false,
+        ),
+        body: Center(
+          child: Container(
+            height: 500,
+            color: Colors.white,
+            child: Obx(
+              () {
+                // Check if meetings is initialized
+                if (meetings.isEmpty) {
+                  // If not initialized, return a placeholder widget or empty container
+                  return const Center(
+                    child: CircularProgressIndicator(), // Placeholder widget
+                  );
+                } else {
+                  // If initialized, return SfCalendar with meetings data
+                  return SfCalendar(
+                    view: CalendarView.month,
+                    dataSource:
+                        CustomCalendarDataSource(getAppointment(meetings)),
+                    onTap: (CalendarTapDetails details) {
+                      // Handle tap events here
+                      // ...
+                      if (details.targetElement ==
+                          CalendarElement.calendarCell) {
+                        // Check if the tapped element is a calendar cell (date)
+                        isDateBooked(DateTime selectedDate) {
+                          for (var appointment in meetings) {
+                            if (appointment.startTime.year ==
+                                    selectedDate.year &&
+                                appointment.startTime.month ==
+                                    selectedDate.month &&
+                                appointment.startTime.day == selectedDate.day) {
+                              return true; // Date is already booked
+                            }
+                          }
+                          return false; // Date is not booked
+                        }
 
-                  DateTime selectedDate = details.date!;
-                  bool isEventBooked = isDateBooked(selectedDate);
-                  if (isEventBooked) {
-                    // Show a snack bar if the event is already booked
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content:
-                            Text('The date is already booked with an event.'),
-                      ),
-                    );
-                  } else {
-                    _addNewAppointment(context, selectedDate);
-                  }
+                        DateTime selectedDate = details.date!;
+                        bool isEventBooked = isDateBooked(selectedDate);
+                        if (isEventBooked) {
+                          // Show a snack bar if the event is already booked
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'The date is already booked with an event.'),
+                            ),
+                          );
+                        } else {
+                          _addNewAppointment(context, selectedDate);
+                        }
+                      }
+                    },
+                    monthViewSettings: const MonthViewSettings(
+                      appointmentDisplayMode:
+                          MonthAppointmentDisplayMode.appointment,
+                    ),
+                  );
                 }
               },
-              monthViewSettings: const MonthViewSettings(
-                appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-              ),
-            );
-          }
-        },
-      ),
-    );
+            ),
+          ),
+        ));
   }
 
   RxList<Appointment> getAppointment(meetings) {
@@ -169,7 +180,7 @@ class MyCalendar extends StatelessWidget {
                   //   "user_id": "2",
                   //   "created_by_id": "456"
                   // };
-                  Map<String, dynamic> requestBody = {
+                  var requestBody = {
                     "name": "test",
                     "date": "2024-03-15",
                     "from_date": "2024-03-14T09:00:00",
